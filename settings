@@ -1,0 +1,7 @@
+auto_configuration_at_start_of_this_scrip:yes
+killswitch: true
+connection_protocol: TCP
+(TCP +secure -speed / UDP -secure +speed)
+dns: 1.1.1.1, 1.0.0.1
+(you can only set 3 dns ip with a , )
+fast_connection: true
