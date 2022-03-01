@@ -3,7 +3,6 @@
 
 source settings.conf # loads config settings
 
-
 ####################################
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -36,7 +35,6 @@ source settings.conf # loads config settings
 #
 
 if [[ $auto_configuration_at_start_of_this_scrip == true ]]; then
-    
     if [[ $connection_protocol == "TCP" ]]; then
         echo ""
         echo "connection protocol: $connection_protocol"
@@ -55,7 +53,6 @@ if [[ $auto_configuration_at_start_of_this_scrip == true ]]; then
         echo ""
         exit 2
     fi
-    
     if [[ $use_dns == "true" ]]; then
         echo ""
         echo "dns option is: $dns1, $dns2, $dns3."
@@ -87,7 +84,6 @@ if [[ $auto_configuration_at_start_of_this_scrip == true ]]; then
         echo ""
         exit 4
     fi
-
     if [[ $fast_connection == true ]]; then
         echo ""
         echo "fast connection option is enabled"
@@ -105,7 +101,6 @@ if [[ $auto_configuration_at_start_of_this_scrip == true ]]; then
         echo ""
         exit 5
     fi
-
     if [[ $vpn_accelerator == true ]]; then
         echo ""
         echo "vpn acceleration option is enabled"
@@ -124,7 +119,6 @@ if [[ $auto_configuration_at_start_of_this_scrip == true ]]; then
         echo ""
         exit 6
     fi
-
     if [[ $alt_routing == true ]]; then
         echo ""
         echo "vpn acceleration option is enabled"
@@ -143,7 +137,6 @@ if [[ $auto_configuration_at_start_of_this_scrip == true ]]; then
         echo ""
         exit 7
     fi
-    
     if [[ $kill_switch == true ]]; then
         echo ""
         echo "kill switch is enabled"
@@ -162,12 +155,10 @@ if [[ $auto_configuration_at_start_of_this_scrip == true ]]; then
         echo ""
         exit 8
     fi
-
 elif [[ $auto_configuration_at_start_of_this_scrip == false ]]; then
     echo ""
     echo "starting without configuration..."
     echo ""
-
 else
     echo ""
     echo "error code:1"
@@ -177,57 +168,33 @@ else
     echo ""
     exit 1
 fi
-
 flag_continue=true
-
 while $flag_continue == true; do
 
     if [[ $(protonvpn-cli s | grep No) == "No active ProtonVPN connection." ]]; then
-
         echo "1. Start Protonvpn"
-
     else
-
         echo "2. stop Protonvpn"
         echo "3. reconnect"
         echo "st. status"
-
     fi
-    
     echo "s. settings"
     echo "e. exit"
-
     read answer
-
     if [[ "$answer" == "1" ]]; then
-
         protonvpn-cli c $fast_connection
-
     elif [[ "$answer" == "2" ]]; then
-
         protonvpn-cli d
-
     elif [[ "$answer" == "3" ]]; then
-
         protonvpn-cli r
-
     elif [[ "$answer" == "st" ]]; then
-
         protonvpn-cli s
-
     elif [[ "$answer" == "s" ]]; then
-
         nano -mtS settings.conf
-
     elif [[ "$answer" == "e" ]]; then
-
         flag_continue=false
-
     else
-
         echo "wrong input."
         clear
-
     fi
-    
 done
