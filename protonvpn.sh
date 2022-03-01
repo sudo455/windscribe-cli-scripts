@@ -11,22 +11,28 @@ source settings.conf # loads config settings
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   1: Can not start because the auto_configuration_at_start_of_this_scrip is not set to true
 #      or false
-#       Please check your settings file and try again.
+#       Please check your settings.conf file and try again.
 #
 #   2: Can not configure the connection protocol TCP or UDP.
-#       Please check your settings file and try again.
+#       Please check your settings.conf file and try again.
 #
 #   3: Can not configure the dns. At least one dns is required for the program to run correctly
-#       Please check your settings file and try again.
+#       Please check your settings.conf file and try again.
 #
 #   4: Can not configure to use_dns or not. At least true or auto in the value use_dns is required for the program to run correctly
-#       Please check your settings file and try again.
+#       Please check your settings.conf file and try again.
 #
 #   5: Can not configure if the fast connection is enabled or disabled
-#       Please check your settings file and try again.
+#       Please check your settings.conf file and try again.
 #
 #   6: Can not configure if the vpn acceleration is enabled or disabled
-#       Please check your settings file and try again.
+#       Please check your settings.conf file and try again.
+#
+#   7: Can not configure if the vpn acceleration is enabled or disabled
+#       Please check your settings.conf file and try again.
+#
+#   8:Can not configure if the kill switch is enabled or disabled
+#       Please check your settings.conf file and try again.
 #
 
 if [[ $auto_configuration_at_start_of_this_scrip == true ]]; then
