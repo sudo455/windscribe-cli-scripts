@@ -1,133 +1,227 @@
-if [[ "$(grep -o "auto_configuration_at_start_of_this_scrip: " settings)" == "auto_configuration_at_start_of_this_scrip: yes" ]]; then
+#Hello in this project i will try to create a protonvpn-cli script that has a deferent more
+#user-frendly cli-gui
 
-    echo ""
-    echo "configuring..."
-    if [[ "$(cat settings | grep connection_protocol: )" == "connection_protocol: TCP" ]] ; then
+source settings.conf # loads config settings
+
+
+####################################
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#|         error codes:            |
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#   1: Can not start because the auto_configuration_at_start_of_this_scrip is not set to true
+#      or false
+#       Please check your settings file and try again.
+#
+#   2: Can not configure the connection protocol TCP or UDP.
+#       Please check your settings file and try again.
+#
+#   3: Can not configure the dns. At least one dns is required for the program to run correctly
+#       Please check your settings file and try again.
+#
+#   4: Can not configure to use_dns or not. At least true or auto in the value use_dns is required for the program to run correctly
+#       Please check your settings file and try again.
+#
+#   5: Can not configure if the fast connection is enabled or disabled
+#       Please check your settings file and try again.
+#
+#   6: Can not configure if the vpn acceleration is enabled or disabled
+#       Please check your settings file and try again.
+#
+
+if [[ $auto_configuration_at_start_of_this_scrip == true ]]; then
+    
+    if [[ $connection_protocol == "TCP" ]]; then
+        echo ""
+        echo "connection protocol: $connection_protocol"
+        echo ""
         protonvpn-cli config -p tcp
-    elif [[ "$(cat settings | grep connection_protocol: )" == "connection_protocol: UDP" ]] ; then
+    elif [[ $connection_protocol == "UDP" ]]; then
+        echo ""
+        echo "connection protocol: $connection_protocol"
+        echo ""
         protonvpn-cli config -p udp
     else
-        echo "can't continue configure connection protocol error code: 1"
-        exit 1
+        echo ""
+        echo "error code:2"
+        echo "Can not configure the connection protocol TCP or UDP"
+        echo "Please check your settings file and try again."
+        echo ""
+        exit 2
     fi
-
-    if [[ "$(grep -o "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}, [0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}, [0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}" settings)" != "" ]]; then
-        protonvpn-cli config --dns custom --ip $(grep -o "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}, [0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}, [0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}" settings)
-    elif [["$(grep -o "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}, [0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}" settings)" != "" ]]; then
-        protonvpn-cli config --dns custom --ip $(grep -o "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}, [0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}" settings)
-    elif [[ "$(grep -o "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}" settings)" != "" ]]; then
-        protonvpn-cli config --dns custom --ip $(grep -o "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}" settings)
-    elif [[ "$(grep -o "dns: auto")" == "dns: auto" ]]; then
+    
+    if [[ $use_dns == "true" ]]; then
+        echo ""
+        echo "dns option is: $dns1, $dns2, $dns3."
+        echo ""
+        if [[ $dns3 != N/A ]]; then
+            protonvpn-cli config --dns custom --ip $dns1 $dns2 $dns3
+        elif [[ $dns2 != N/A ]]; then
+            protonvpn-cli config --dns custom --ip $dns1 $dns2
+        elif [[ $dns1 != N/A ]]; then
+            protonvpn-cli config --dns custom --ip $dns1
+        elif [[ $dns1 == N/A ]]; then
+            echo ""
+            echo "error code: 3"
+            echo "Can not configure the dns. At least one dns is required for the program to run correctly"
+            echo "Please check your settings file and try again."
+            echo ""
+            exit 3
+        fi
+    elif [[ $use_dns == "auto" ]]; then
+        echo ""
+        echo "dns option is auto"
+        echo ""
         protonvpn-cli config --dns automatic
     else
-        echo "can't configure dns server code exit  exit code: 2"
-        exit 1
+        echo ""
+        echo "error code: 4"
+        echo "Can not configure to use_dns or not. At least true or auto in the value use_dns is required for the program to run correctly"
+        echo "Please check your settings file and try again."
+        echo ""
+        exit 4
     fi
 
-    if [[ "$(cat settings | grep killswitch)" == "killswitch: true" ]] ; then
+    if [[ $fast_connection == true ]]; then
+        echo ""
+        echo "fast connection option is enabled"
+        echo ""
+        fast_connection = "-f"
+    elif [[ $fast_connection == false ]]; then
+        echo ""
+        echo "fast connection is disabled"
+        echo ""
+    else
+        echo ""
+        echo "error code: 5"
+        echo "Can not configure if the fast connection is enabled or disabled"
+        echo "Please check your settings file and try again."\
+        echo ""
+        exit 5
+    fi
+
+    if [[ $vpn_accelerator == true ]]; then
+        echo ""
+        echo "vpn acceleration option is enabled"
+        echo ""
+        protonvpn-cli config --vpn-accelerator enable
+    elif [[ $vpn_accelerator == false ]]; then
+        echo ""
+        echo "vpn acceleration is disabled"
+        echo ""
+        protonvpn-cli config --vpn-accelerator disable
+    else
+        echo ""
+        echo "error code: 6"
+        echo "Can not configure if the vpn acceleration is enabled or disabled"
+        echo "Please check your settings file and try again."
+        echo ""
+        exit 6
+    fi
+
+    if [[ $alt_routing == true ]]; then
+        echo ""
+        echo "vpn acceleration option is enabled"
+        echo ""
+        protonvpn-cli config --alt-routing enable
+    elif [[ $alt_routing == false ]]; then
+        echo ""
+        echo "vpn acceleration is disabled"
+        echo ""
+        protonvpn-cli config --alt-routing disable
+    else
+        echo ""
+        echo "error code: 7"
+        echo "Can not configure if the vpn acceleration is enabled or disabled"
+        echo "Please check your settings file and try again."
+        echo ""
+        exit 7
+    fi
+    
+    if [[ $kill_switch == true ]]; then
+        echo ""
+        echo "kill switch is enabled"
+        echo ""
         protonvpn-cli ks --on
-    elif [[ "$(cat settings | grep killswitch)" == "killswitch: fasle" ]]; then
+    elif [[ $kill_switch == false ]]; then
+        echo ""
+        echo "kill switch is disabled"
+        echo ""
         protonvpn-cli ks --off
     else
-        echo "can't configure kill switch exit code: 3"
-        exit 1
+        echo ""
+        echo "error code: 8"
+        echo "Can not configure if the kill switch is enabled or disabled"
+        echo "Please check your settings file and try again."
+        echo ""
+        exit 8
     fi
 
-    if [[ "$(cat settings | grep fast_connection)" == "fast_connection: true" ]] ; then
-        fs = "-f"
-    elif [[ "$(cat settings | grep fast_connection)" == "fast_connection: fasle" ]] ; then
-        fs = ""
-    else
-        echo "can't configure fast connection exit code: 4"
-        exit 1
-    fi
+elif [[ $auto_configuration_at_start_of_this_scrip == false ]]; then
+    echo ""
+    echo "starting without configuration..."
+    echo ""
 
-    echo " "
-    echo "done configuring"
-    echo " "
+else
+    echo ""
+    echo "error code:1"
+    echo "can not start because the auto_configuration_at_start_of_this_scrip is not set to true"
+    echo "or false"
+    echo "Please check your settings file and try again."
+    echo ""
+    exit 1
 fi
 
-flag_loop= true
-flag_clear= false
+flag_continue=true
 
-while [[ $flag_loop != true ]] ; do
+while $flag_continue == true; do
 
-    if [[ "$(protonvpn-cli s | grep "No active ProtonVPN connection.")" == "NO active ProtonVPN connection." ]] ; then
-        flag_active_protonvpn_connections=false
+    if [[ $(protonvpn-cli s | grep No) == "No active ProtonVPN connection." ]]; then
+
+        echo "1. Start Protonvpn"
+
     else
-        flag_active_protonvpn_connections=true
-    fi
 
-    if [[ $flag_clear == true ]] ; then
-        clear
-    fi
-    flag_clear= true
+        echo "2. stop Protonvpn"
+        echo "3. reconnect"
+        echo "st. status"
 
-    echo "menu"
-    echo "1-start proton vpn"
-    if [[ $flag_active_protonvpn_connections == true ]] ; then    
-        echo "2-stop proton vpn"
-        echo "3-reconnect proton vpn"
     fi
-    echo "st-status proton vpn"
-    echo "s-settings"
-    echo "e-exit"
+    
+    echo "s. settings"
+    echo "e. exit"
+
     read answer
 
-    if [[ $answer == 1 ]] ; then
-        if [[ $flag_active_protonvpn_connections == false ]]; then
-            protonvpn-cli c $fs
-        else
-            protonvpn-cli r
-        fi
-    elif [[ $answer == 2 ]] ; then
-        if [[ $flag_active_protonvpn_connections == true ]]; then
-            protonvpn-cli d
-        fi
-    elif [[ $answer == 3 ]] ; then
-        if [[ $flag_active_protonvpn_connections == true ]]; then
-            protonvpn-cli r
-        fi
-    elif [[ $answer == st ]] ; then
+    if [[ "$answer" == "1" ]]; then
+
+        protonvpn-cli c $fast_connection
+
+    elif [[ "$answer" == "2" ]]; then
+
+        protonvpn-cli d
+
+    elif [[ "$answer" == "3" ]]; then
+
+        protonvpn-cli r
+
+    elif [[ "$answer" == "st" ]]; then
+
         protonvpn-cli s
-    elif [[ $answer == s ]] ; then
-        
-        clear
-        echo "menu2"
-        echo "1 or edwnano-edit the settings text file via nano"
-        echo "2 or edwnote-edit the settings text file via notepadqq"
-        echo "3 or edwgedi-edit the settings text file via gedit"
-        echo "e-exit"
-        read answer2
 
-        flag_loop2= true
-        while [[ $flag_loop2 == true ]]; do
-            if [[ $answer2 == edwnano ]] ; then
-                nano -mt settings
-                flag_loop2= false
-            elif [[ $answer2 == edwnote ]] ; then
-                notepadqq settings
-                flag_loop2= false
-            elif [[ $answer2 == edwgedi ]] ; then
-                gedit settings
-                flag_loop2= false
-            elif [[ $answer2 == 1 ]] ; then
-                nano -mt settings
-                flag_loop2= false
-            elif [[ $answer2 == 2 ]] ; then
-                notepadqq settings
-                flag_loop2= false
-            elif [[ $answer2 == 3 ]] ; then
-                gedit settings
-                flag_loop2= false
-            else
-                echo "wrong answer please try again"
-            fi
-        done
-    elif [[ $answer == "e" ]] ; then
-        flag_loop= false
+    elif [[ "$answer" == "s" ]]; then
+
+        nano -mtS settings.conf
+
+    elif [[ "$answer" == "e" ]]; then
+
+        flag_continue=false
+
     else
-        echo "wrong answer please try again"
-    fi
 
+        echo "wrong input."
+        clear
+
+    fi
+    
 done

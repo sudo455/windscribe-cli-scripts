@@ -32,7 +32,7 @@ while [[ $flag == true ]] ; do
         flagconfip=false
         ip=$(grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' settings)
         if [[ $ip != "" ]] ; then
-            protonvpn-cli config --dns custom --ip $ip
+                
         else
             ip=$(grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\} , [0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}' settings)
             if [[ $ip != "" ]] ; then
