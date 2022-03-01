@@ -88,7 +88,7 @@ if [[ $auto_configuration_at_start_of_this_scrip == true ]]; then
         echo ""
         echo "fast connection option is enabled"
         echo ""
-        fast_connection = "-f"
+        fast_connection_pr=" -f"
     elif [[ $fast_connection == false ]]; then
         echo ""
         echo "fast connection is disabled"
@@ -182,7 +182,7 @@ while $flag_continue == true; do
     echo "e. exit"
     read answer
     if [[ "$answer" == "1" ]]; then
-        protonvpn-cli c $fast_connection
+        protonvpn-cli c$fast_connection_pr
     elif [[ "$answer" == "2" ]]; then
         protonvpn-cli d
     elif [[ "$answer" == "3" ]]; then
