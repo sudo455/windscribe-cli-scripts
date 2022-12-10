@@ -1,2 +1,2 @@
-# protonvpn-cli-scripts
-a simple shell script for protonvpn-cli linux!!
+#  windscribe-cli-scripts
+a simple shell script for windscribe-cli linux!!
